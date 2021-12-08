@@ -9,7 +9,6 @@ with open('Day8/Display.csv', 'r') as file:
         Displays.append(line[1].split(' '))
         
 # Partie 1
-number_length = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6]
 
 count_1478 = 0
 for display in Displays:
@@ -28,36 +27,57 @@ for display in Displays:
 print(f'Solution 1 : {count_1478}')
 
 # Partie 2
+Sum = 0
 for index, display in enumerate(Displays):
-    number_string = ['' for _ in range(10)]
+    number_set= [set('') for _ in range(10)]
     # First pass for easy numbers
     for index_num, string in enumerate(Numbers[index]):
         length = len(string)
         match length:
             case 2:
-                number_string[1] = string
+                number_set[1] = set(string)
             case 3:
-                number_string[7] = string
+                number_set[7] = set(string)
             case 4:
-                number_string[4] = string
+                number_set[4] = set(string)
             case 7:
-                number_string[8] = string
-    # Deduct other numbers from previous ones
-    for index_num, string in enumerate(Numbers[index]):
-        length = len(string)
+                number_set[8] = set(string)
+    # Deduct other numbers displayed from previous ones
+    newDisplay = ''
+    for index_num, string in enumerate(display):
+        string_set = set(string)
+        length = len(string_set)
         match length:
-            case 5:
-                
-                
-                if (number_string[1] in string):
-                    number_string[3] = string
+            case 2:
+                newDisplay = ''.join([newDisplay, '1'])
+            case 3:
+                newDisplay = ''.join([newDisplay, '7'])
+            case 4:
+                newDisplay = ''.join([newDisplay, '4'])
+            case 7:
+                newDisplay = ''.join([newDisplay, '8'])
+            case 5:    #number is 3, 2 or 5
+                len_match_with_1 = len(number_set[1] & string_set)
+                if len_match_with_1 == 2:
+                    newDisplay = ''.join([newDisplay, '3'])
                 else:
-                    num4_7 = set(''.join([number_string[4], number_string[7]]))
-                    set_string = set(string)
-                    length = len(num4_7 & set_string)
-                    if length == 3:
-                        number_string[2] = string
+                    len_match_with_4 = len(number_set[4] & string_set)
+                    if len_match_with_4 == 2:
+                        newDisplay = ''.join([newDisplay, '2'])
                     else:
-                        number_string[5] = string
-            case 6:
-                
+                        newDisplay = ''.join([newDisplay, '5'])
+            case 6:    #number is 0, 6 or 9
+                len_match_with_4 = len(number_set[4] & string_set)
+                if len_match_with_4 == 4:
+                    newDisplay = ''.join([newDisplay, '9'])
+                else:
+                    len_match_with_1 = len(number_set[1] & string_set)
+                    if len_match_with_1 == 2:
+                        newDisplay = ''.join([newDisplay, '0'])
+                    else:
+                        newDisplay = ''.join([newDisplay, '6'])
+    
+    Sum += int(newDisplay)
+    
+
+print(f'Solution 2 : {Sum}')
