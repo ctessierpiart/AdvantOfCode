@@ -55,7 +55,7 @@ class Cave():
             self.Bassin_sizes.append(len(bassin))
                 
                 
-    def Adjacent_non_limits(self, points : list, bassin : list):
+    def Adjacent_non_limits(self, points : list):
         Valid_points = []
         for point in points:
             y, x = point
