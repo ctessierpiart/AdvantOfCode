@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 Rules = {}
 
 with open('Day14/Chain.csv', 'r') as file:
@@ -8,21 +8,28 @@ with open('Day14/Chain.csv', 'r') as file:
         Base_pair, swap = rule.split(' -> ')
         Swap1 = ''.join([Base_pair[0], swap])
         Swap2 = ''.join([swap, Base_pair[1]])
-        Rules[Base_pair] = [Swap1, Swap2]
+        Ref = swap
+        Rules[Base_pair] = [Swap1, Swap2, swap]
 
-
-Pair_counter =  []
 first_pairs = [first_chain[index:index+2] for index, char in enumerate(first_chain[:-1])]
-first_occurences = Counter(first_pairs)
+Occurences = Counter(first_pairs)
 for key, value in Rules.items():
-    counter = 0
-    if key in first_occurences:
-        counter = first_occurences[key]
-    Pair_counter.append(counter)
-Pair_list = list(Rules)
+    if key not in Occurences:
+        Occurences[key] = 0
 
-Nbstep = 100
-for step in range(Nbstep-1):
-    for pair in Pair_counter:
-        if pair != 0:
-            Pair_counter[Rules]
+Char_occurence = Counter(first_chain)
+
+Nbstep = 10
+for step in range(Nbstep):
+    new_occurences = Counter()
+    for pair in Occurences:
+        new_occurences[Rules[pair][0]] += Occurences[pair]
+        new_occurences[Rules[pair][1]] += Occurences[pair]
+        Char_occurence[Rules[pair][2]] += Occurences[pair]
+    Occurences = new_occurences
+
+most_common_char, nb_most_common = Char_occurence.most_common()[0]
+
+least_common_char, nb_least_common = Char_occurence.most_common()[-1]
+
+print(f'Solution 1 = {nb_most_common - nb_least_common}')
