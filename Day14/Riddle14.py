@@ -19,7 +19,7 @@ for key, value in Rules.items():
 
 Char_occurence = Counter(first_chain)
 
-Nbstep = 10
+Nbstep = 40
 for step in range(Nbstep):
     new_occurences = Counter()
     for pair in Occurences:
