@@ -3,9 +3,18 @@ with open('Day16/Packets.csv', 'r') as file:
             bit_packets = bin(int(line, 16))[2:]
 
 class Packet():
-    
     def __init__(self, bit_packet):
-        self.subpacket = []
+        self.subpackets = []
+        self.Version = 0
+        self.Type = 0
+        ##Literal value
+        self.Value = 0
+        ##Operator
+        self.Length_ID = 0
+        self.Length = 0
+        self.Packet_decode(bit_packet)
+        
+    def Packet_decode(self, bit_packet):
         index = 0
         self.Version = int(bit_packet[index:index+3], 2)
         index += 3
@@ -14,54 +23,46 @@ class Packet():
         
         if self.Type == 4:
             bit = bit_packet[index]
-            while bit == '0':
-                index += 1
-                bit = bit_packet[index]
+            index += 1
+            stringValue = ''
             while bit == '1':
-                index += 1
-                self.subpacket.append(bit_packet[index:index+4])
+                stringValue = ''.join([stringValue, bit_packet[index:index+4]])
                 index+= 4
                 bit = bit_packet[index]
-            index += 1
-            self.subpacket.append(bit_packet[index:index+4])
-            index+= 4
+                index += 1
+            stringValue = ''.join([stringValue, bit_packet[index:index+4]])
+            index += 4
+            self.Value += int(stringValue, 2)
+            
         
         else:
             self.Length_ID = (bit_packet[index] == '1')
             index += 1
-            if self.Length_ID == True:
-                number_of_subpacket = int(bit_packet[index:index+11],2)
+            if self.Length_ID == True: ##Number of subpackets
+                TotalSubpacketNumber = int(bit_packet[index:index+11],2)
                 index += 11
-                self.subpacket = Packet(bit_packet[index:])
-            else:
-                number_of_bits = int(bit_packet[index:index+15],2)
+                SubpacketNumber = 0
+                LeftoversBit = bit_packet[index:]
+                while SubpacketNumber != TotalSubpacketNumber:
+                    SubpacketNumber += 1
+                    LeftoversBit, Packetlenght = Packet(LeftoversBit)
+                    self.Length += Packetlenght
+                    
+            else:                      ##Bits of subpackets
+                self.Length = int(bit_packet[index:index+15],2)
                 index += 15
-                self.subpacket = Packet(bit_packet[index:])
+                TotalLength = 0
+                LeftoversBit = bit_packet[index:]
+                while TotalLength != self.Length:
+                    LeftoversBit, Packetlenght = Packet(LeftoversBit)
                 
-    def operator(self, bit_packet):
-        self.subpacket = []
-        index = 0
-        self.Version = int(bit_packet[index:index+3], 2)
-        index += 3
-        self.Type = int(bit_packet[index:index+3], 2)
-        index += 3
+        return bit_packet[index:], self.Length
+                
 
 test = '110100101111111000101000'
+test2 = '00111000000000000110111101000101001010010001001000000000'
 
-def Define_First_Packet(bit_string):
-    index = 0
-    Version = int(bit_string[index:index+3], 2)
-    index += 3
-    Type = int(bit_string[index:index+3], 2)
-    index += 3
-    Length_ID = (bit_string[index] == '1')
-    index += 1
-    if Length_ID == True:
-        number_of_subpacket = int(bit_string[index:index+11],2)
-        index += 11
-        subpacket = Packet(bit_string[index:])
-    else:
-        number_of_bits = int(bit_string[index:index+15],2)
-        index += 15
-        subpacket = Packet(bit_string[index:])
-    return bit_string[index:index+]
+test_packet = Packet(test)
+test_packet2 = Packet(test2)
+
+print(test_packet.Value)
