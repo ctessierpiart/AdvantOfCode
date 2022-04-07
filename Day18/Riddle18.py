@@ -84,7 +84,6 @@ def CheckMagnitude(SnailNumber):
                     del MagnitudeNumber[indexNumber]
                     del MagnitudeNumber[indexNumber]
                     MagnitudeNumber.insert(indexNumber, [Value, depth-1])
-                else:
                     
         depth -= 1
     return MagnitudeNumber[0][0]
